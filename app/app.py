@@ -1,3 +1,4 @@
+import asyncio
 import streamlit as st
 import os
 import pandas as pd
@@ -30,10 +31,8 @@ with st.sidebar:
             3. **Chat History:** View the previous conversations as the simulation unfolds.
 
             **Credits:**
-            - **Developer:** Yiqiao Yin  
-               - [Site](https://www.y-yin.io/)  
-               - [LinkedIn](https://www.linkedin.com/in/yiqiaoyin/)  
-               - [YouTube](https://youtube.com/YiqiaoYin/)  
+            - **Developer:** Kethan Dosapati 
+               - [LinkedIn](https://www.linkedin.com/in/kethan-dosapati/)  
         """)
 
     # Text input
