@@ -1,34 +1,47 @@
-from huggingface_hub import InferenceClient
-from streaming_stt_nemo import Model
-import random
-import torch
+import streamlit as st
+import os
+import pandas as pd
+
+os.system("pip install together")
+
+from together import Together
+
+import os
+
+# Set the environment variable (just for testing purposes)
+os.environ["api"] = "Together_API_KEY"
+
+# Now, the code can access the api key from the environment variable
+client = Together(api_key=os.environ["api"])
 
 
-# Random seed generator
-def randomize_seed_fn(seed: int) -> int:
-    seed = random.randint(0, 999999)
-    return seed
 
 
-# Function to generate AI response using the selected model
-def call_llama(prompt, seed=42):
-    seed = int(randomize_seed_fn(seed))
-    generator = torch.Generator().manual_seed(seed)
 
-    client = InferenceClient("mistralai/Mistral-7B-Instruct-v0.2")
+def call_llama(prompt: str) -> str:
+    """
+        Send a prompt to the Llama model and return the response.
+        Args:
+            prompt (str): The input prompt to send to the Llama model.
+        Returns:
+            str: The response from the Llama model.
+    """
 
-    prompt = [
-        {"role": "user", "content": f"{prompt}"}
-    ]
+    # Create a completion request with the prompt
+    response = client.chat.completions.create(
 
-    output = ""
-    try:
-        for token in client.chat_completion(prompt, max_tokens=200, stream=True):
-            if token.choices and len(token.choices) > 0:
-                delta_content = token.choices[0].delta.content
-                if delta_content:
-                    output += delta_content
-    except Exception as e:
-        raise RuntimeError(f"Error during text generation: {e}")
+        # Use the Llama-3-8b-chat-hf model
+        model="meta-llama/Llama-3-8b-chat-hf",
 
-    return output
+        # Define the prompt as a user message
+        messages=[
+            {
+                "role": "user",
+                "content": prompt  # Use the input prompt
+            }
+        ],
+        temperature=0.7,
+    )
+
+    # Return the content of the first response message
+    return response.choices[0].message.content
